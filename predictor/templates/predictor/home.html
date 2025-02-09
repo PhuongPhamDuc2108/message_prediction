@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Next Word Prediction</title>
     
-    <!-- Thêm Bootstrap CSS -->
+    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     
     <style>
@@ -45,8 +45,8 @@
         .suggestion-container {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;  /* Khoảng cách giữa các từ */
-            justify-content: center; /* Căn giữa các từ */
+            gap: 10px;  
+            justify-content: center; 
             margin-top: 10px;
         }
         
@@ -55,7 +55,7 @@
             padding: 10px;
             margin: 5px;
             display: inline-block;
-            min-width: 80px;  /* Kích thước tối thiểu của ô chữ */
+            min-width: 80px;  
             text-align: center;
             border: 1px solid #007bff;
             border-radius: 5px;
@@ -92,7 +92,7 @@
             </div>
         </form>
 
-        <!-- Textbox để xây dựng câu -->
+        
         <div class="mt-4">
             <label for="sentence" class="form-label">Constructed Sentence:</label>
             <input type="text" id="sentence" class="form-control" placeholder="Sentence will be constructed here..." readonly>
@@ -101,7 +101,7 @@
 
     <script>
         $(document).ready(function() {
-            // Gửi yêu cầu AJAX khi người dùng nhập từ
+            
             $('#word_input').on('keyup', function() {
                 var word = $(this).val().trim();
 
@@ -114,22 +114,22 @@
                             'csrfmiddlewaretoken': '{{ csrf_token }}'
                         },
                         success: function(response) {
-                            var words = response.next_words;  // Nhận danh sách từ
-                            $('#next_words').html('');  // Xóa nội dung cũ
+                            var words = response.next_words;  
+                            $('#next_words').html('');  
 
                             if (words.length > 0) {
-                                // Hiển thị danh sách 3 từ
+                                
                                 words.forEach(function(word) {
                                     $('#next_words').append('<span class="suggestion">' + word + '</span>');
                                 });
 
-                                // Thêm từ vào câu khi người dùng chọn
+                                
                                 $('.suggestion').on('click', function() {
                                     var currentSentence = $('#sentence').val();
                                     var selectedWord = $(this).text();
-                                    $('#sentence').val(currentSentence + ' ' + selectedWord);  // Thêm từ vào câu
-                                    $('#word_input').val('');  // Xóa nội dung trong word_input
-                                    $('#next_words').html('No prediction yet');  // Reset
+                                    $('#sentence').val(currentSentence + ' ' + selectedWord);  
+                                    $('#word_input').val('');  
+                                    $('#next_words').html('No prediction yet');  
                                 });
                             } else {
                                 $('#next_words').text("No prediction yet");
@@ -141,16 +141,16 @@
                 }
             });
 
-            // Xóa toàn bộ câu khi nhấn nút "Clear"
+            
             $('#clear_btn').on('click', function() {
-                $('#sentence').val('');  // Xóa nội dung câu
-                $('#word_input').val('');  // Xóa nội dung trong word_input
-                $('#next_words').text('No prediction yet');  // Reset
+                $('#sentence').val('');  
+                $('#word_input').val('');  
+                $('#next_words').text('No prediction yet'); 
             });
         });
     </script>
 
-    <!-- Thêm Bootstrap JS và Popper.js -->
+    
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
 </body>

@@ -1,6 +1,6 @@
 from django.http import JsonResponse
 from django.shortcuts import render
-from .nlp_utils import BigramModel  # Nhớ import BigramModel
+from .nlp_utils import BigramModel  
 
 def home(request):
     return render(request, 'predictor/home.html')  # Đường dẫn tới template home.html
