@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Next Word Prediction</title>
+    
+    <!-- Thêm Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .container {
+            margin-top: 100px;
+            max-width: 600px;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .title {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #007bff;
+            margin-bottom: 20px;
+        }
+        .btn-custom {
+            background-color: #007bff;
+            color: white;
+        }
+        .form-control {
+            font-size: 1.1rem;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ced4da;
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 1.2rem;
+            color: #343a40;
+        }
+        
+        .suggestion-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;  /* Khoảng cách giữa các từ */
+            justify-content: center; /* Căn giữa các từ */
+            margin-top: 10px;
+        }
+        
+        .suggestion {
+            cursor: pointer;
+            padding: 10px;
+            margin: 5px;
+            display: inline-block;
+            min-width: 80px;  /* Kích thước tối thiểu của ô chữ */
+            text-align: center;
+            border: 1px solid #007bff;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+            color: #007bff;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        
+        .suggestion:hover {
+            background-color: #007bff;
+            color: green;
+        }
+        
+    </style>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title text-center">Next Word Prediction</h1>
+        
+        <form id="predictionForm">
+            <div class="mb-3">
+                <label for="word_input" class="form-label">Enter a word:</label>
+                <input type="text" id="word_input" class="form-control" placeholder="Type a word..." autocomplete="off">
+            </div>
+            <div class="result text-center">
+                <p>Next words: 
+                    <span id="next_words" class="text-primary">No prediction yet</span>
+                </p>
+            </div>
+            <div class="d-grid gap-2">
+                <button type="button" id="clear_btn" class="btn btn-danger btn-block">Clear Sentence</button>
+            </div>
+        </form>
+
+        <!-- Textbox để xây dựng câu -->
+        <div class="mt-4">
+            <label for="sentence" class="form-label">Constructed Sentence:</label>
+            <input type="text" id="sentence" class="form-control" placeholder="Sentence will be constructed here..." readonly>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            // Gửi yêu cầu AJAX khi người dùng nhập từ
+            $('#word_input').on('keyup', function() {
+                var word = $(this).val().trim();
+
+                if (word.length > 0) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '/predict/',
+                        data: {
+                            'word': word,
+                            'csrfmiddlewaretoken': '{{ csrf_token }}'
+                        },
+                        success: function(response) {
+                            var words = response.next_words;  // Nhận danh sách từ
+                            $('#next_words').html('');  // Xóa nội dung cũ
+
+                            if (words.length > 0) {
+                                // Hiển thị danh sách 3 từ
+                                words.forEach(function(word) {
+                                    $('#next_words').append('<span class="suggestion">' + word + '</span>');
+                                });
+
+                                // Thêm từ vào câu khi người dùng chọn
+                                $('.suggestion').on('click', function() {
+                                    var currentSentence = $('#sentence').val();
+                                    var selectedWord = $(this).text();
+                                    $('#sentence').val(currentSentence + ' ' + selectedWord);  // Thêm từ vào câu
+                                    $('#word_input').val('');  // Xóa nội dung trong word_input
+                                    $('#next_words').html('No prediction yet');  // Reset
+                                });
+                            } else {
+                                $('#next_words').text("No prediction yet");
+                            }
+                        }
+                    });
+                } else {
+                    $('#next_words').text("No prediction yet");
+                }
+            });
+
+            // Xóa toàn bộ câu khi nhấn nút "Clear"
+            $('#clear_btn').on('click', function() {
+                $('#sentence').val('');  // Xóa nội dung câu
+                $('#word_input').val('');  // Xóa nội dung trong word_input
+                $('#next_words').text('No prediction yet');  // Reset
+            });
+        });
+    </script>
+
+    <!-- Thêm Bootstrap JS và Popper.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+</body>
+</html>
